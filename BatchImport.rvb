@@ -1,0 +1,90 @@
+Option Explicit
+
+Private strOldFolder
+If isEmpty(strOldFolder) Then
+	strOldFolder = Rhino.WorkingFolder
+End If
+
+Call BatchImportGen
+Sub BatchImportGen()
+    
+	' Allow the user to interactively pick a folder
+	Dim strFolder
+	strFolder = Rhino.BrowseForFolder(strOldFolder, "Select folder to process", "Batch Import")
+	If VarType(strFolder) <> vbString Then 
+		Exit Sub
+	Else strOldFolder = strFolder
+	End If	
+  
+	' Create a file system object
+	Dim objFSO
+	Set objFSO = CreateObject("Scripting.FileSystemObject") 
+  
+	' Get a folder object based on the selected folder
+	Dim objFolder
+	Set objFolder = objFSO.GetFolder(strFolder)
+	
+	Dim strExt,strAltext,arrExt
+	arrExt = Array("Rhino", "STL", "DXF", "DWG", "IGES", "STEP", "SolidWorks")
+	strExt = Rhino.ListBox(arrExt, "Select File type", "Batch Import")
+	strAltExt = ""
+	If IsNull(strExt) Then Exit Sub	
+	
+	Select Case strExt
+		Case "Rhino"
+			strExt = "3dm"
+		Case "STEP" 
+			strExt = "stp"
+			strAltExt = "step"
+		Case "SolidWorks"
+			strExt = "sldprt"
+		Case "IGES"
+			strExt = "igs"
+			strAltExt = "iges"
+		Case Else
+			strExt = LCase(strExt)
+	End Select
+		
+	' Process the folder
+	Call ProcessFolder(objFSO, objFolder, strExt, strAltExt)
+  
+	' Release the objects
+	Set objFolder = Nothing
+	Set objFSO = Nothing
+  
+End Sub
+  
+  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  ' ProcessFolder
+  '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Sub ProcessFolder(objFSO, objFolder, ext, altExt)
+	Rhino.EnableRedraw(False)
+	' Import all files of chosen filetype in the selected folder
+	Dim objFile,eName,strOpen,strFilename,strLayername,arrLCO,blnFound
+	blnFound = False
+	For Each objFile In objFolder.Files
+		eName = LCase(objFSO.GetExtensionName(objFile.Path))
+		If eName <> "" And (eName = ext Or eName = altExt) Then		
+			strOpen = LCase(objFile.Path)
+			strFilename = objFile.Name
+			strLayername = Left(strFilename, (Len(strFilename) - Len(ext) - 1))
+			Call Rhino.Print("Importing " & strLayername)
+			Call Rhino.Command("_NoEcho _-Import " & chr(34) & strOpen & chr(34) & " _Enter")
+			arrLCO = Rhino.LastCreatedObjects(False)
+			'add new layer for each file with layer name=file name (less extention)
+			If IsArray(arrLCO) Then				
+				If Not Rhino.IsLayer(strLayername) Then
+					Rhino.AddLayer(strLayername)
+				End If
+				Call Rhino.ObjectLayer(arrLCO, strLayername)
+			Else
+				Call Rhino.Print("No objects imported from file " & strFileName)
+			End If
+			blnFound = True			
+		End If
+	Next
+	If Not blnFound Then
+		Call Rhino.MessageBox("No files of chosen type found in folder!", 0, "File Import")
+	End If
+	Rhino.EnableRedraw(True)
+End Sub

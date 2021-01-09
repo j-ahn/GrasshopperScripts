@@ -1,0 +1,67 @@
+Option Explicit
+ 
+Sub ExportLayerfbx
+ 
+	' Declare local variables
+	Dim strPath, strFile
+	Dim arrLayers, strLayer
+	Dim strLayerName, blnFullPath
+	Dim arrSelected
+ 
+	' check if the document has been saved
+	If IsNull(Rhino.DocumentName()) Then
+		Rhino.Print "Document must be saved before Export"
+		Exit Sub	
+	End If
+	
+	
+	' Get the path to and name of the current document.
+	' Surround with double-quotes in case path includes spaces.
+	strPath = Chr(34) & Rhino.DocumentPath & Rhino.DocumentName & Chr(34)
+ 
+	' Get names of all layers
+	arrLayers = Rhino.LayerNames
+ 
+	' Disable redrawing
+	Rhino.EnableRedraw False
+ 
+	' Process each layer
+	For Each strLayer In arrLayers
+ 
+		' Unselect all   
+		Rhino.Command "_-SelNone", 0
+ 
+		' Select all objects on layer. Surround layer name
+		' with double-quotes in case it includes spaces.
+		Rhino.Command "_-SelLayer " & Chr(34) & strLayer & Chr(34), 0
+ 
+		' Make sure some objects were selected
+		arrSelected = Rhino.SelectedObjects
+		If IsArray(arrSelected) Then
+ 
+			' set to True to include parent layer names in the file name
+			blnFullPath = True
+			
+			' get either the layer name or the full path of the layer
+			strLayerName = Rhino.LayerName(strLayer, blnFullPath)
+			strFile = strPath
+			strFile = Replace(strFile, ".3dm", strLayerName & ".obj")
+			
+			' always replace :: with and underscore	in the file path
+			strFile = Replace(strFile, "::", "_")
+ 
+			' Export the selected objects
+			Rhino.Command "_-Export " & strFile & " _EnterEnd", 0
+ 
+		End If
+	Next
+ 
+	' Unselect all
+	Rhino.Command "_-SelNone", 0
+ 
+	' Enable redrawing
+	Rhino.EnableRedraw True
+ 
+End Sub
+
+ExportLayerfbx()

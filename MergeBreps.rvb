@@ -1,0 +1,72 @@
+﻿Option Explicit
+'Script written by <insert name>
+'Script copyrighted by <insert company name>
+'Script version Tuesday, 20 October 2020 13:15:56
+
+Call MergeBreps
+
+Sub MergeBreps()
+	Dim aObj: aObj = Rhino.GetObjects("Select objects.", 8 + 16,, True)
+	If Not IsArray(aObj) Then Exit Sub
+	Dim temp, i, n, brep, p
+	p = False
+	
+	Rhino.EnableRedraw(False)
+
+	Dim X: X = False
+	Dim Y: Y = True
+	Dim sObj
+	Brep = aObj(0) 
+	
+	Do
+		
+		X = False
+		For i = 1 To Ubound(aObj)
+		
+			If Not isNull(aObj(i)) Then
+
+				If DoBrepsIntersect(aObj(i), Brep)Then
+					X = True
+					Rhino.UnselectAllObjects
+					Rhino.SelectObjects(array(aObj(i), Brep))
+					Rhino.Command "_TestBrepMerge"
+					
+					If Rhino.LastCommandResult = 0 Then
+						temp = Rhino.LastCreatedObjects
+						Brep = temp(0)
+						aobj(i) = Null
+						Exit For
+					End If
+					
+				End If
+			End If
+		Next
+
+	Loop Until X = False '& Y = False
+	 
+	If Not isNull(Brep) Then Rhino.SelectObject Brep
+	Rhino.EnableRedraw(True)		
+		
+End Sub
+
+
+Function DoBrepsIntersect(Brep1, Brep2)
+	
+	DoBrepsIntersect = False
+	
+	Dim atemp: atemp = Rhino.IntersectBreps(Brep1, Brep2)
+	
+	If isArray(aTemp) Then 
+		
+		Rhino.DeleteObjects(atemp)
+		DoBrepsIntersect = True
+		
+	End If
+
+End Function
+
+Function SortBrepsByIntersection(aBreps)
+	
+	
+	
+End Function

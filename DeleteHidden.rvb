@@ -1,0 +1,31 @@
+﻿import scriptcontext as sc
+import Rhino.DocObjects as Do
+import Rhino.Commands as rc
+
+def RunCommand():
+# any object, visible Or hidden
+object_enumerator_settings = Do.ObjectEnumeratorSettings()
+object_enumerator_settings.ObjectTypeFilter = Do.ObjectType.AnyObject
+object_enumerator_settings.HiddenObjects = True
+
+# this gets any object, visible And hidden
+all_obs = sc.doc.Objects.GetObjectList(object_enumerator_settings)
+
+# pick only those that are hidden
+hidden_objects = o For o In all_obs If o.Visible==False]
+
+For hidden_object In hidden_objects:
+	# first Set the hidden object To visible
+	hidden_object.Attributes.Visible = True
+	hidden_object.CommitChanges()
+	sc.doc.Views.Redraw()
+	#Then delete
+	print "deleting", hidden_object
+	sc.doc.Objects.Delete(hidden_object.Id, False)
+
+	#done
+	sc.doc.Views.Redraw()
+	return rc.Result.Success
+
+	If __name__ == '__main__':
+		RunCommand() 

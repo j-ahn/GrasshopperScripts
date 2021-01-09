@@ -1,0 +1,23 @@
+Itasca Consulting Group, Inc., Griddle-GSurf version: 1.0.5.0 2018.7.23.1050
+Rhino model: D:\Jiwoo Ahn\Desktop\PSM3700 - CRR\Southern Area Modification\FLAC3D\Run10\Southern Area Modification Model (FLAC3D) - Nonmanifold - V7.3dm
+Time: Mon Oct 19 14:39:19 2020
+
+GSurf input parameters
+  MinEdgeLength: 0.4
+  MaxEdgeLength: 1.79769e+308
+  Mode: Tri
+  RidgeAngle: 20
+  MaxGradation: 0.4
+  DeleteInput: Yes
+
+input mesh
+  number of triangles: 1148717
+  number of nodes: 534460
+
+output mesh
+  number of quadrilatrals: 0
+  number of triangles: 830205
+  number of nodes: 377143
+
+meshing time: 1254.99 s
+

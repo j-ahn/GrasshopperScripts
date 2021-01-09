@@ -1,0 +1,22 @@
+﻿Option Explicit
+'Script written by <insert name>
+'Script copyrighted by <insert company name>
+'Script version Thursday, 07 May 2020 15:49:58
+
+Call ConvertDotsToText()
+
+Sub ConvertDotsToText
+	Dim arrDots, strDot
+	arrDots = Rhino.GetObjects("Select dots", 0, True, True)
+	If Not IsArray(arrDots) Then Exit Sub
+ 
+	Dim arrPt, strText
+	For Each strDot In arrDots
+		If Rhino.IsTextDot(strDot) Then
+			strText = Rhino.TextDotText(strDot)
+			arrPt = Rhino.TextDotPoint(strDot)
+			Rhino.AddText strText, arrPt
+			Rhino.DeleteObject strDot
+		End If
+	Next
+End Sub

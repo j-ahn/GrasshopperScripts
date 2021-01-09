@@ -1,0 +1,17 @@
+Itasca Consulting Group, Inc., Griddle-GVol version: 1.0.5.0 2018.7.23.1050
+Rhino model: D:\Jiwoo Ahn\OneDrive - Pells Sullivan Meynink\JA\Grasshopper\D:\Jiwoo Ahn\Desktop\PSM3700 - CRR\Southern Area Modification\FLAC3D\Run10\Mesh\Southern Area Modification Model (FLAC3D) - Nonmanifold - V7.3dm
+Time: Tue Oct 20 08:02:52 2020
+
+GVol input parameters
+  Mode: Tet
+
+input mesh
+  number of triangles: 837837
+  number of nodes: 380635
+
+output mesh
+  number of tetrahedra: 4839001
+  number of nodes: 806336
+
+meshing time: 113.53 s
+
